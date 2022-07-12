@@ -9,7 +9,7 @@ import collections
 from onnx import numpy_helper
 
 from .layers import AVAILABLE_CONVERTERS
-
+from .utils import fix_keras_layer_name
 
 def onnx_node_attributes_to_dict(args):
     """
@@ -161,18 +161,35 @@ def onnx_to_keras(onnx_model, input_names,
 
         for i, node_input in enumerate(node.input):
             logger.debug('Check input %i (name %s).', i, node_input)
-            if node_input not in layers:
+
+            if node_input not in layers and fix_keras_layer_name(node_input) not in layers:
                 logger.debug('The input not found in layers / model inputs.')
 
                 if node_input in weights:
                     logger.debug('Found in weights, add as a numpy constant.')
                     layers[node_input] = weights[node_input]
+
+                if fix_keras_layer_name(node_input) in weights:
+                    logger.debug('Found in weights, add as a numpy constant.')
+                    layers[node_input] = weights[node_input]
+
                 else:
                     raise AttributeError('Current node is not in weights / model inputs / layers.')
         else:
             logger.debug('... found all, continue')
 
         keras.backend.set_image_data_format('channels_first')
+        print("CONVERTER 182")
+        if isinstance(keras_names, list):
+            res = []
+            for k in keras_names:
+                res.append(fix_keras_layer_name(k))
+            keras_names = res
+        else:
+            keras_names = fix_keras_layer_name(keras_names)
+
+        print(AVAILABLE_CONVERTERS.keys())
+        print(node_type)
         AVAILABLE_CONVERTERS[node_type](
             node,
             node_params,

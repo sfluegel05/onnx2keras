@@ -1,4 +1,5 @@
 import numpy as np
+import re
 from tensorflow import keras
 
 
@@ -117,3 +118,19 @@ def check_torch_keras_error(model, k_model, input_np, epsilon=1e-5, change_order
             max_error = error
 
     return max_error
+
+def fix_keras_layer_name(name):
+    """
+    Replace all characters not matching the required pattern for keras layers: ^[A-Za-z0-9.][A-Za-z0-9_.\\/>-]*$
+    :param name: ONNX layer name
+    :return: a valid Keras layer name
+    """
+    if name == '':
+        return name
+
+    name_b = re.sub('[^A-Za-z0-9_.\\/>-]', '_', name)
+    name_c = re.sub('[^A-Za-z0-9.]', '.', name_b[0])
+    if len(name_b) > 1:
+        name_c += name_b[1:]
+
+    return name_c

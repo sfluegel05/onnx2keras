@@ -1,6 +1,6 @@
 from tensorflow import keras
 import logging
-from .utils import ensure_tf_type, ensure_numpy_type
+from .utils import ensure_tf_type, ensure_numpy_type, fix_keras_layer_name
 
 
 def convert_conv(node, params, layers, lambda_func, node_name, keras_name):
@@ -171,8 +171,9 @@ def convert_conv(node, params, layers, lambda_func, node_name, keras_name):
                 activation=None,
                 dilation_rate=dilation,
                 bias_initializer='zeros', kernel_initializer='zeros',
-                name=keras_name
+                name=fix_keras_layer_name(keras_name)
             )
+            #node_name=fix_keras_layer_name(node_name)
 
             layers[node_name] = conv(input_0)
     else:
@@ -314,3 +315,6 @@ def convert_convtranspose(node, params, layers,
             layers[node_name] = crop(input_0)
     else:
         raise AttributeError('Layer is not supported for now')
+
+
+

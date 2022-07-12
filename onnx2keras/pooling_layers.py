@@ -1,6 +1,6 @@
 from tensorflow import keras
 import logging
-from .utils import ensure_tf_type
+from .utils import ensure_tf_type, fix_keras_layer_name
 
 
 def convert_maxpool(node, params, layers, lambda_func, node_name, keras_name):
