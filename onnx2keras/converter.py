@@ -179,17 +179,7 @@ def onnx_to_keras(onnx_model, input_names,
             logger.debug('... found all, continue')
 
         keras.backend.set_image_data_format('channels_first')
-        print("CONVERTER 182")
-        if isinstance(keras_names, list):
-            res = []
-            for k in keras_names:
-                res.append(fix_keras_layer_name(k))
-            keras_names = res
-        else:
-            keras_names = fix_keras_layer_name(keras_names)
 
-        print(AVAILABLE_CONVERTERS.keys())
-        print(node_type)
         AVAILABLE_CONVERTERS[node_type](
             node,
             node_params,
